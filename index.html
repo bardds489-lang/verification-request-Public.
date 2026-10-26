@@ -1,0 +1,159 @@
+
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>مركز طلبات التوثيق</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      padding: 20px;
+      font-family: Arial, sans-serif;
+      background: #f0f2f5;
+      color: #1c1e21;
+    }
+    .card {
+      width: 100%;
+      max-width: 400px;
+      padding: 28px;
+      background: white;
+      border-radius: 16px;
+      box-shadow: 0 4px 22px #00000012;
+    }
+    .mark {
+      width: 58px;
+      height: 58px;
+      display: grid;
+      place-items: center;
+      margin: 0 auto 16px;
+      border-radius: 50%;
+      background: #e7f3ff;
+      color: #1877f2;
+      font-size: 30px;
+    }
+    h1 { text-align: center; font-size: 23px; }
+    .intro {
+      color: #606770;
+      text-align: center;
+      line-height: 1.8;
+      font-size: 14px;
+    }
+    label {
+      display: block;
+      margin: 16px 0 7px;
+      font-weight: bold;
+      font-size: 14px;
+    }
+    input, textarea {
+      width: 100%;
+      padding: 13px;
+      border: 1px solid #ccd0d5;
+      border-radius: 8px;
+      font: inherit;
+    }
+    textarea { resize: vertical; min-height: 80px; }
+    button {
+      width: 100%;
+      margin-top: 20px;
+      padding: 14px;
+      border: 0;
+      border-radius: 8px;
+      background: #1877f2;
+      color: white;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    .notice {
+      margin-top: 18px;
+      padding: 12px;
+      border-radius: 8px;
+      background: #f5f6f7;
+      color: #606770;
+      font-size: 12px;
+      line-height: 1.8;
+    }
+    #result { margin-top: 14px; line-height: 1.7; }
+  </style>
+</head>
+<body>
+  <main class="card">
+    <div class="mark" aria-hidden="true">✓</div>
+    <h1>طلب توثيق الحساب</h1>
+    <p class="intro">
+      أرسل معلومات حسابك لمراجعة طلبك.
+      هذا نموذج مستقل وليس تابعًا لفيسبوك أو Meta.
+    </p>
+
+    <form id="requestForm">
+      <label for="accountName">اسم الحساب</label>
+      <input id="accountName" name="accountName"
+        maxlength="100" required
+        placeholder="اكتب اسم الحساب">
+
+      <label for="profileUrl">رابط الملف الشخصي</label>
+      <input id="profileUrl" name="profileUrl"
+        type="url" maxlength="500" required
+        placeholder="https://www.facebook.com/...">
+
+      <label for="notes">ملاحظات (اختياري)</label>
+      <textarea id="notes" name="notes"
+        maxlength="500"
+        placeholder="اكتب أي معلومات إضافية"></textarea>
+
+      <button type="submit">تجهيز طلب التوثيق</button>
+    </form>
+
+    <div id="result" role="status"></div>
+
+    <div class="notice">
+      تنبيه: هذا النموذج لا يمنح التوثيق ولا يضمنه.
+      لا تدخل كلمة مرورك أو رمز التحقق.
+      لم يتم تفعيل الإرسال التلقائي بعد.
+    </div>
+  </main>
+
+  <script>
+    document.getElementById('requestForm')
+      .addEventListener('submit', function(event) {
+        event.preventDefault();
+
+        const name =
+          document.getElementById('accountName').value.trim();
+        const profile =
+          document.getElementById('profileUrl').value.trim();
+        const notes =
+          document.getElementById('notes').value.trim();
+        const result = document.getElementById('result');
+
+        try {
+          const url = new URL(profile);
+          if (!['facebook.com', 'www.facebook.com',
+                'm.facebook.com'].includes(url.hostname)) {
+            throw new Error('الرابط غير صالح');
+          }
+        } catch {
+          result.textContent =
+            'يرجى إدخال رابط صحيح لملف فيسبوك الشخصي.';
+          return;
+        }
+
+        const request = {
+          accountName: name,
+          profileUrl: profile,
+          notes: notes
+        };
+
+        // عرض الطلب محليًا فقط؛ لم يُرسل إلى أي جهة.
+        result.textContent =
+          'تم التحقق من البيانات محليًا. لم يُرسل الطلب بعد.';
+        console.log('Request preview:', request);
+      });
+  </script>
+</body>
+</html>
